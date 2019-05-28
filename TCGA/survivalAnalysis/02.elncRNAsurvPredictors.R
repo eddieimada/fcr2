@@ -124,7 +124,7 @@ significantEnhancers <- lapply(coxModelByTypes, function(x){
   })
 
 ### Saving data.frames with elncRNAs by TCGA types
-lapply(names(significantEnhancers), saveDFtoFiles, y = significantEnhancers)
+invisible(lapply(names(significantEnhancers), saveDFtoFiles, y = significantEnhancers))
 
 ###########################################################################
 ### Common genes among subtypes
@@ -139,6 +139,7 @@ elncNamesCommon
 # Predictive elncRNAs
 elncNamesPredictives <- Reduce(f="union", x = elncNames)
 length(elncNamesPredictives)
+write.csv(x = elncNamesPredictives, file = "../text/union_of_predictive_enhancers_through_tumors_list.csv")
 
 # Comparing Predictive elncRNAs with DGE lncRNAs
 DGElncRNAs <- c("CATG00000107122", "CATG00000054627", "CATG00000039286", 
@@ -232,11 +233,23 @@ rm(survObjectByTypes)
 kidneyEnhancerSurv <- survfit(KidneySurv ~ ENSG00000272666)
 
 ### Drawing Kaplan-Meier curve
-jpeg(filename = "../figs/KidneyKMcurve.jpg", width = 854)
-ggsurvplot(kidneyEnhancerSurv, data = KidneySurv, pval = TRUE, pval.method = TRUE,
-           xlab = "Overall survival in days", ylab = "Survival probability", pval.size = 5,
+jpeg(filename = "../figs/KidneyKMcurve.jpg", width = 4000, height = 4000, res = 300)
+ggsurvkm <- ggsurvplot(kidneyEnhancerSurv, data = KidneySurv, pval = TRUE, pval.method = TRUE,
+           xlab = "Overall survival in days", ylab = "Survival probability", pval.size = 10,
            legend.lab = c("Low-risk, n = 442", "High-risk, n = 439"), legend = c(0.8,0.8),
-           pval.coord = c(1000 ,0.1), pval.method.coord = c(500, 0.1)) 
+           palette = c("blue", "red"), size = 2,
+           #font.x = 5, font.y = 5, 
+           pval.coord = c(1500 ,0.1), pval.method.coord = c(500, 0.1))
+ggsurvkm$plot <- ggsurvkm$plot + 
+  theme(
+        axis.text.x=element_text(color = "black", size=30),
+        axis.text.y=element_text(color = "black", size=30),
+        axis.title.x=element_text(size = 40),
+        axis.title.y=element_text(size = 40),
+        legend.text=element_text(size = 34),
+        legend.title=element_text(size = 34),
+        legend.key.size = unit(1.5, "cm"))
+ggsurvkm
 dev.off()
 
 ###########################################################################

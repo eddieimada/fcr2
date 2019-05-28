@@ -166,10 +166,14 @@ for(file in files) {
   
   ### CREATING THE GLOBAL EXPRESSION LEVEL FOR COMMON SET OF ENHANCERS
   ### Subsetting by common set.
-  mappingTable <- read.csv("../../../Manuscript/Pan_cancer/text/mapping_table_andersson.csv", header = T,
+  mappingTable <- read.csv("../text/mapping_table.csv", header = T,
                            stringsAsFactors = FALSE)
   commonEnh <- unique(mappingTable$fantom_cat)
   expressCommon <- express[rownames(express) %in% as.character(commonEnh),]
+  dim(expressCommon)
+  #commonEnhancers <- rownames(expressCommon)
+  #write.csv(commonEnhancers, file = "../text/CommonEnhancersID.csv", sep = ",")
+  
   
   ### Mean of RPM by sample
   expressMeanCommon <- apply(expressCommon, 2, mean)
@@ -191,10 +195,20 @@ for(file in files) {
   rm(list = type) #use list to remove the value of type and no type
 }
 
+mappingTable <- read.csv("../text/mapping_table.csv", header = T,
+                         stringsAsFactors = FALSE)
+commonEnh <- unique(mappingTable$fantom_cat)
+length(commonEnh)
+commonEnhancersID <- rownames(express)[rownames(express) %in% as.character(commonEnh)]
+length(commonEnhancersID)
+write.csv(commonEnhancersID, file = "../text/commonEnhancersID.csv")
+
 ###########################################################################
 ### Final GLOBAL EXPRESSION data frame with all the subtypes
 ###########################################################################
-write.csv(allEnhExpressiondf, file = "../text/globalAllEnhancerExpression.csv", sep = ",")
+### File with all the cases sshowing TCGA-ID, cancer type, tumor enhancer mean RPM and
+### normal enhancer meanRPM.
+write.csv(allEnhExpressiondf, file = "../text/globalAllEnhancerExpression.csv")
 ### Cancer subtypes
 table(allEnhExpressiondf$subtype)
 ###########################################
@@ -220,7 +234,7 @@ for (subtype in subtypes) {
 }
 
 ### GLOBAL ACTIVATION data.frame with all the types
-write.csv(relativeChangeAllEnhdf, file = "../text/globalAllEnhancerActivation.csv", sep = ",")
+write.csv(relativeChangeAllEnhdf, file = "../text/globalAllEnhancerActivation.csv")
   
 ###########################################
 ### analysis by subtype in common enhancers
@@ -274,10 +288,11 @@ relativeChangeCommonEnhdf <- cbind.data.frame(relativeChangeCommonEnhdf,
                                                              TRUE, FALSE)) 
 
 ### Final GLOBAL ACTIVATION data.frame with Chen et al types and BH FDR.
-write.csv(relativeChangeAllEnhdf, file = "../text/globalAllEnhancersActivationFDR.csv", sep = ",")
-write.csv(relativeChangeCommonEnhdf, file = "../text/globalCommonEnhancersActivationFDR.csv", sep = ",")
+write.csv(relativeChangeAllEnhdf, file = "../text/globalAllEnhancersActivationFDR.csv")
+write.csv(relativeChangeCommonEnhdf, file = "../text/globalCommonEnhancersActivationFDR.csv")
 
-
+###########################################
+### Preparing data for figures
 ### levels for coloring the figure according regulation and significance
 relativeChangeAllEnhdf <- cbind.data.frame(relativeChangeAllEnhdf, 
                               colorLevels = ifelse(relativeChangeAllEnhdf$up_regulated, 1, 2))
@@ -296,25 +311,47 @@ relativeChangeCommonEnhdf <- relativeChangeCommonEnhdf[order(-relativeChangeComm
 relativeChangeCommonEnhdf$subtype <-factor(relativeChangeCommonEnhdf$subtype, levels = relativeChangeCommonEnhdf$subtype)    
   
 ### Making plots
-jpeg(filename = "../figs/allEnhancersActivationTCGAtypes.jpg", width = 854)
+png(filename = "../figs/allEnhancersActivationTCGAtypes_new_colorPoster.png", width = 4000, height = 4000, res=300)
 ggplot(data = relativeChangeAllEnhdf, aes(x = subtype, y = relativeChange, fill = colorLevels)) +
-  geom_bar(stat="identity", width=0.7)+
-  theme(axis.text.x=element_text(color = "black", size=10, angle=90, vjust=.8, hjust=0.8),
-  legend.position= c(0.8,0.8), plot.title = element_text(hjust = 0.5)) +
-  ggtitle("Relative enhancer change using all the enhancers")+
+  geom_bar(stat="identity", width=0.6)+
+  scale_fill_manual(values=c("#D55D5A", "#5086FA", "#B0B0B0"))+
+  theme(axis.text.x=element_text(color = "black", size=24, angle=90, vjust=.8, hjust=0.8),
+        axis.text.y=element_text(color = "black", size=20),
+        axis.title.x=element_text(size = 24),
+        axis.title.y=element_text(size = 24),
+        legend.text=element_text(size = 24),
+        legend.position= c(0.8,0.8), legend.key.size = unit(1.5, "cm"),
+        plot.title = element_text(hjust = 0.5)) +
+  #ggtitle("Relative enhancer change using all the enhancers")+
   guides(fill=guide_legend(title=NULL, nrow = 3, byrow = TRUE))+
   labs(y = "Relative expression change", x = "TCGA cancer types")
 dev.off()  
 
-jpeg(filename = "../figs/commonEnhancersActivationTCGAtypes.jpg", width = 854)    
-ggplot(data = relativeChangeCommonEnhdf, aes(x = subtype, y = relativeChange, fill = colorLevels)) +
-  geom_bar(stat="identity", width=0.7)+
-  theme(axis.text.x=element_text(color = "black", size=10, angle=90, vjust=.8, hjust=0.8),
-        legend.position= c(0.8,0.8), plot.title = element_text(hjust = 0.5)) +
-  ggtitle("Relative enhancer change using common enhancers")+
+png(filename = "../figs/allEnhancersActivationTCGAtypes_newtxt.png", width = 4000, height = 4000, res=300)
+ggplot(data = relativeChangeAllEnhdf, aes(x = subtype, y = relativeChange, fill = colorLevels)) +
+  geom_bar(stat="identity", width=0.6)+
+  #scale_fill_manual(values=c("red", "blue", "gray"))+
+  theme(axis.text.x=element_text(color = "black", size=24, angle=90, vjust=.8, hjust=0.8),
+        axis.text.y=element_text(color = "black", size=20),
+        axis.title.x=element_text(size = 24),
+        axis.title.y=element_text(size = 24),
+        legend.text=element_text(size = 24),
+        legend.position= c(0.8,0.8), legend.key.size = unit(1.5, "cm"),
+        plot.title = element_text(hjust = 0.5)) +
+  #ggtitle("Relative enhancer change using all the enhancers")+
   guides(fill=guide_legend(title=NULL, nrow = 3, byrow = TRUE))+
   labs(y = "Relative expression change", x = "TCGA cancer types")
-dev.off()
+dev.off()  
+
+# jpeg(filename = "../figs/commonEnhancersActivationTCGAtypes_new.jpg", width = 854)    
+# ggplot(data = relativeChangeCommonEnhdf, aes(x = subtype, y = relativeChange, fill = colorLevels)) +
+#   geom_bar(stat="identity", width=0.7)+
+#   theme(axis.text.x=element_text(color = "black", size=10, angle=90, vjust=.8, hjust=0.8),
+#         legend.position= c(0.8,0.8), plot.title = element_text(hjust = 0.5)) +
+#   ggtitle("Relative enhancer change using common enhancers")+
+#   guides(fill=guide_legend(title=NULL, nrow = 3, byrow = TRUE))+
+#   labs(y = "Relative expression change", x = "TCGA cancer types")
+# dev.off()
 
 ###########################################################################
 ### Session date and info
