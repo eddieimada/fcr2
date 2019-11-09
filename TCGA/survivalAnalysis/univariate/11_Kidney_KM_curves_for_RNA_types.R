@@ -105,13 +105,17 @@ kidneymRNASurv <- survfit(KidneySurv ~ ENSG00000065328)
 #jpeg(filename = "../figs/Kidney_KM_curve_ENSG00000065328.jpg", width = 4000, height = 4000, res = 300)
 ggsurvkm_ENSG00000065328 <- ggsurvplot(kidneymRNASurv, data = KidneySurv, pval = TRUE, pval.method = TRUE,
                        xlab = "", ylab = "Survival probability", pval.size = 10,
-                       legend.lab = c(paste0("Low-risk, n = ", hr_samples), paste0("High-risk, n = ", lr_samples)), 
+                       title = "Main",
+                       #submain = "THIS",
+                       legend.lab = c(paste0("Low-expression, n = ", hr_samples), paste0("High-expression, n = ", lr_samples)), 
                                       legend = c(0.75,0.8),
-                       palette = c("blue", "red"), size = 2,
+                       palette = c("skyblue1", "deeppink1"), size = 2,
                        #font.x = 5, font.y = 5, 
                        pval.coord = c(1000 ,0.1), pval.method.coord = c(0, 0.1))
 ggsurvkm_ENSG00000065328$plot <- ggsurvkm_ENSG00000065328$plot + 
+  ggtitle("Gene ENSG00000065328") +
   theme(
+    plot.title = element_text(color = "black", size=34, hjust = 0.5),
     axis.text.x=element_text(color = "black", size=30),
     axis.text.y=element_text(color = "black", size=30),
     axis.title.x=element_text(size = 40),
@@ -147,13 +151,15 @@ kidneymRNASurv <- survfit(KidneySurv ~ CATG00000107122)
 #jpeg(filename = "../figs/Kidney_KM_curve_CATG00000107122.jpg", width = 4000, height = 4000, res = 300)
 ggsurvkm_CATG00000107122 <- ggsurvplot(kidneymRNASurv, data = KidneySurv, pval = TRUE, pval.method = TRUE,
                                        xlab = "", ylab = "", pval.size = 10,
-                                       legend.lab = c(paste0("Low-risk, n = ", hr_samples), paste0("High-risk, n = ", lr_samples)), 
+                                       legend.lab = c(paste0("Low-expression, n = ", hr_samples), paste0("High-expression, n = ", lr_samples)), 
                                        legend = c(0.75,0.8),
-                                       palette = c("blue", "red"), size = 2,
+                                       palette = c("skyblue1", "deeppink1"), size = 2,
                                        #font.x = 5, font.y = 5, 
                                        pval.coord = c(1000 ,0.1), pval.method.coord = c(0, 0.1))
 ggsurvkm_CATG00000107122$plot <- ggsurvkm_CATG00000107122$plot + 
+  ggtitle("Gene CATG00000107122") +
   theme(
+    plot.title = element_text(color = "black", size=34, hjust = 0.5),
     axis.text.x=element_text(color = "black", size=30),
     axis.text.y=element_text(color = "black", size=30),
     axis.title.x=element_text(size = 40),
@@ -189,13 +195,15 @@ kidneymRNASurv <- survfit(KidneySurv ~ ENSG00000235989)
 #jpeg(filename = "../figs/Kidney_KM_curve_ENSG00000235989.jpg", width = 4000, height = 4000, res = 300)
 ggsurvkm_ENSG00000235989 <- ggsurvplot(kidneymRNASurv, data = KidneySurv, pval = TRUE, pval.method = TRUE,
                                        xlab = "Overall survival in days", ylab = "Survival probability", pval.size = 10,
-                                       legend.lab = c(paste0("Low-risk, n = ", hr_samples), paste0("High-risk, n = ", lr_samples)), 
+                                       legend.lab = c(paste0("Low-expression, n = ", hr_samples), paste0("High-expression, n = ", lr_samples)), 
                                        legend = c(0.75,0.8),
-                                       palette = c("blue", "red"), size = 2,
+                                       palette = c("skyblue1", "deeppink1"), size = 2,
                                        #font.x = 5, font.y = 5, 
                                        pval.coord = c(1000 ,0.1), pval.method.coord = c(0, 0.1))
 ggsurvkm_ENSG00000235989$plot <- ggsurvkm_ENSG00000235989$plot + 
+  ggtitle("Gene ENSG00000235989") +
   theme(
+    plot.title = element_text(color = "black", size=34, hjust = 0.5),
     axis.text.x=element_text(color = "black", size=30),
     axis.text.y=element_text(color = "black", size=30),
     axis.title.x=element_text(size = 40),
@@ -231,13 +239,15 @@ kidneymRNASurv <- survfit(KidneySurv ~ ENSG00000196756)
 #jpeg(filename = "../figs/Kidney_KM_curve_ENSG00000196756.jpg", width = 4000, height = 4000, res = 300)
 ggsurvkm_ENSG00000196756 <- ggsurvplot(kidneymRNASurv, data = KidneySurv, pval = TRUE, pval.method = TRUE,
                                        xlab = "Overall survival in days", ylab = "", pval.size = 10,
-                                       legend.lab = c(paste0("Low-risk, n = ", hr_samples), paste0("High-risk, n = ", lr_samples)), 
+                                       legend.lab = c(paste0("Low-expression, n = ", hr_samples), paste0("High-expression, n = ", lr_samples)), 
                                        legend = c(0.75,0.8),
-                                       palette = c("blue", "red"), size = 2,
+                                       palette = c("skyblue1", "deeppink1"), size = 2,
                                        #font.x = 5, font.y = 5, 
                                        pval.coord = c(1000 ,0.1), pval.method.coord = c(0, 0.1))
 ggsurvkm_ENSG00000196756$plot <- ggsurvkm_ENSG00000196756$plot + 
+  ggtitle("Gene ENSG00000196756") +
   theme(
+    plot.title = element_text(color = "black", size=34, hjust = 0.5),
     axis.text.x=element_text(color = "black", size=30),
     axis.text.y=element_text(color = "black", size=30),
     axis.title.x=element_text(size = 40),

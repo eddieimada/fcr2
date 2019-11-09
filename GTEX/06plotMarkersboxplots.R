@@ -6,6 +6,7 @@ library(reshape2)
 library(ggplot2)
 library(SummarizedExperiment)
 # load objs
+### The gencode gtex dataset can be obtained from the recount2 website
 load("gencodeGtex.rda")
 load("~/Dropbox (MechPred)/FANTOM6/GTEX/objs/gtexEset.rda")
 #extract exp matrix

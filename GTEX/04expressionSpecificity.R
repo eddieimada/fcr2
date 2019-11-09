@@ -60,7 +60,7 @@ gtexEntropyTissue <- apply(gtexCPM, 1, entropyFunc, y= TissueTypes)
 save(gtexEntropyTissue, file = "./objs/gtexEntropyTissues.rda")
 ### Apply empirical entropy
 gtexEntropyAll <- -1*apply(gtexCPM, 1, entropy.empirical)
-
+save(gtexEntropyAll, file = "~/FANTOM6/GTEX/gtexEntropyAll.rda")
 #################################################################
 ### Feature Types 
 ### Create lncRNA categories (as factors)
