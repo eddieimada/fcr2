@@ -10,11 +10,12 @@ All data necessary to reproduce these analysis can be obtained in **<https://jhu
 Data is available as a RangeSummarizedObject (RSE) which can be loaded in R enviroment using the SummarizedExperiment package.
 Raw data is available as overall base coverage at gene level.
 
-Data can be used as is, or scaled by the number of mapped reads and read length or AUC to get read-counts like data. For more information about processing data see:
+Data can be used as is, or scaled by the number of mapped reads and read length or AUC to get read-counts like data. For more information about processing data and generating recount compatible tracks see:
 
 *Collado-Torres, Leonardo, Abhinav Nellore, and Andrew E. Jaffe. "recount workflow: Accessing over 70,000 human RNA-seq samples with Bioconductor." F1000Research 6 (2017).*
+*Nellore, Abhinav, Leonardo Collado-Torres, Andrew E. Jaffe, José Alquicira-Hernández, Christopher Wilks, Jacob Pritt, James Morton, Jeffrey T. Leek, and Ben Langmead. "Rail-RNA: scalable analysis of RNA-seq splicing and coverage." Bioinformatics 33, no. 24 (2016): 4033-4040.*
 
-```{r}
+```r
 ### Load required libraries
 library(SummarizedExperiment)
 library(recount)
@@ -28,7 +29,7 @@ TCGA <- scale_counts(rse_fc, by="auc")
 
 For huge datasets (e.g. TCGA or GTEX) you might want to subset only data relevant to your work (e.g. cancer type) to reduce the amount of computational resource used.
 
-```{r}
+```r
 ### Load required libraries
 library(SummarizedExperiment)
 library(recount)
@@ -64,3 +65,4 @@ download_study('SRP057804', type = 'rse-fc')
 ### Search for studies
 ## Citation
 If you used any of the code or dataset available please cite:
+*Imada, Eddie Luidy, et al. "Recounting the FANTOM Cage Associated Transcriptome." BioRxiv (2019): 659490.*
