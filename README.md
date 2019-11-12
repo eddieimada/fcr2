@@ -2,9 +2,12 @@
 
 # Description
 This repository hosts all the code used in the FC-R2 paper by Imada & Sanchez et al. 2019.
+The code is organized in three folders. 
+- Pre-Processing folder contain the scripts used to create and process the resource. 
+- TCGA folder contain the scripts necessary for the analysis performed in the TCGA cohort, such as the DGE and Survival analysis (under subfolder survAnalysis). 
+- GTEX folder contain the scripts necessary for all analysis performed in the GTEx cohort, this includes the specificity and expression levels analysis, biomarkers expression profiles across tissues and other validation steps. 
 
 All data necessary to reproduce these analysis can be obtained in https://jhubiostatistics.shinyapps.io/recount/
-
 ## How to use
 
 Data is available as a RangeSummarizedObject (RSE) which can be loaded in R enviroment using the SummarizedExperiment package.
