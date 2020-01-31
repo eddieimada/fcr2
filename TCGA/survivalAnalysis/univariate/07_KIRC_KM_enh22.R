@@ -89,7 +89,11 @@ survModel <- survfit(survivalDOD ~ 1)
 
 ### Creating prognostic variable for ENSG00000272666
 ENSG00000272666values <- express[rownames(express) == "ENSG00000272666", ]
+ENSG00000272666values <- log2(ENSG00000272666values + 1)
 ENSG00000272666 <- ifelse(ENSG00000272666values > median(ENSG00000272666values), 1, 0)
+table(ENSG00000272666)
+hr_samples <- sum(ENSG00000272666 == 1)
+lr_samples <- sum(ENSG00000272666 == 0)
 
 ### Selecting Kidney survival object
 KidneySurv <- survivalDOD
@@ -97,25 +101,46 @@ KidneySurv <- survivalDOD
 ### Fitting survival model according ENSG00000272666
 kidneyEnhancerSurv <- survfit(KidneySurv ~ ENSG00000272666)
 
+
 ### Drawing Kaplan-Meier curve
-jpeg(filename = "../figs/KIRC_KM_curve.jpg", width = 4000, height = 4000, res = 300)
-ggsurvkm <- ggsurvplot(kidneyEnhancerSurv, data = KidneySurv, pval = TRUE, pval.method = TRUE,
-                       xlab = "Overall survival in days", ylab = "Survival probability", pval.size = 10,
-                       legend.lab = c("Low-expression, n = 266", "High-expression, n = 265"), legend = c(0.75,0.8),
+jpeg(filename = "../figs/KIRC_KM_curve_italicized_offname.jpg", width = 4000, height = 4000, res = 300)
+ggsurvkm <- ggsurvplot(kidneyEnhancerSurv, data = KidneySurv, 
+                       pval = TRUE, pval.method = TRUE,
+                       xlab = "Overall survival in days", ylab = "Survival probability", 
+                       pval.size = 10,
+                       legend.lab = c(paste0("Low-expression, n = ", hr_samples), 
+                                      paste0("High-expression, n = ", lr_samples)), 
+                       legend = c(0.75,0.8),
                        palette = c("skyblue1", "deeppink1"), size = 2,
                        #palette = c("#17B0FE", "#FB0181"), size = 2,
                        #font.x = 5, font.y = 5, 
-                       pval.coord = c(1200 ,0.1), pval.method.coord = c(500, 0.1))
+                       pval.coord = c(1200 ,0.1), 
+                       pval.method.coord = c(500, 0.1),
+                       risk.table = TRUE,
+                       risk.table.height = 0.2,
+                       tables.y.text = FALSE,
+                       fontsize = 10,
+                       )
+ggsurvkm <- ggpar(ggsurvkm,
+                  font.title     = c(34, "italic", "black"),         
+                  font.caption   = c(14, "plain"),        
+                  font.x         = c(30, "italic"),          
+                  font.y         = c(30, "italic"),      
+                  font.xtickslab = c(30, "plain"),
+                  font.ytickslab = c(30, "plain"),
+                  font.legend    = c(30, "plain", "black"),
+)
 ggsurvkm$plot <- ggsurvkm$plot + 
-  ggtitle("Gene ENSG00000272666") +
+  ggtitle('CTA-384D8.35')+
   theme(
-    plot.title = element_text(color = "black", size=34, hjust = 0.5),
-    axis.text.x=element_text(color = "black", size=30),
-    axis.text.y=element_text(color = "black", size=30),
-    axis.title.x=element_text(size = 40),
-    axis.title.y=element_text(size = 40),
-    legend.text=element_text(size = 34),
-    legend.title=element_text(size = 34),
-    legend.key.size = unit(1.5, "cm"))
+    plot.title = element_text(face = "italic", color = "black", size=34, hjust = 0.5),
+    # axis.text.x=element_text(color = "green", size=30),
+    # axis.text.y=element_text(color = "black", size=30),
+    axis.title.x=element_blank(),
+    # axis.title.y=element_text(size = 40),
+    # legend.text=element_text(size = 34),
+    # legend.title=element_text(size = 34),
+    # legend.key.size = unit(1.5, "cm")
+    )
 ggsurvkm
 dev.off()

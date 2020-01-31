@@ -12,7 +12,7 @@ setwd("~/DropboxMech/FANTOM6/TCGA/")
 ### Clean environment 
 rm(list=ls())
 
-### Load
+### List result files from DGE analysis
 files <- list.files("~/Dropbox (MechPred)/FANTOM6/TCGA/DGE/", recursive = TRUE,
                     pattern="DGE.+rda$", full.names = TRUE)
 

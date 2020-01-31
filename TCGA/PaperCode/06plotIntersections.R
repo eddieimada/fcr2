@@ -1,13 +1,18 @@
 ### Plot intersection boxplots
+##############################
+
+### Load Libraries
 library(ggplot2)
 library(reshape2)
 library(Biobase)
 library(gtable)
+library(grid)
 # setwd
 setwd("~/Dropbox (MechPred)/FANTOM6/TCGA/")
 rm(list=ls())
 # load objs
 load("objs/tcgaEset.rda")
+# load results from survival analysis
 load("objs/BHintersectList.rda")
 # extract data
 exp <- exprs(TCGAeset)
@@ -39,8 +44,12 @@ dn <- dn[c(4,1,3,2)]
 sel <- c(up,dn)
 sel <- c(rbind(up,dn))
 ids <- mapName[sel]
+
+names(ids)[c(6,8)] <- c("MIR99AHG","GABARAPL1-AS1")
+names(ids)[3:5] <- c("SLBP-DT","CYP2U1-AS1", "LINC01331")
 expSel <- exp[ids,]
 expSel <- t(expSel)
+colnames(expSel) <- names(ids)
 df <- cbind.data.frame(expSel+1,site, type)
 df <- melt(df)
 df$class <- NA
@@ -56,8 +65,9 @@ p1 <- ggplot(df, aes(x=site, y=log2(value), fill = type)) +
     theme(legend.position="bottom", 
           legend.title = element_blank(), 
           text = element_text(size = 14),
-          strip.text = element_text(colour = "white"),
-          axis.text.x=element_text(angle=90, hjust=1),
+          strip.text = element_text(colour = "white", face = "italic"),
+          axis.text.x=element_text(size=14, angle=60, hjust=1),
+          axis.text.y=element_text(size=18),
           plot.title = element_text(hjust=0.5)) +
     xlab("") +
     #ggtitle(i) +
@@ -77,7 +87,7 @@ for (i in strip_t) {
     g$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fills[k]
     k <- k+1
 }
-png(filename = "figs/intersection.png", width = 6000, height = 3000, res =300)
+jpeg(filename = "figs/intersection.jpg", width = 6000, height = 3000, res =300)
 grid.draw(g)
 dev.off()
 

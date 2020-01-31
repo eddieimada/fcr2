@@ -8,30 +8,41 @@
 ### Clean and set wd
 rm(list=ls())
 
+setwd("/home/elimada/Dropbox/FANTOM6/GTEX/")
+setwd("~/Dropbox (MechPred)/FANTOM6/GTEX/")
 #################################################################
 ### Load packages
 require(Biobase)
+
 require(entropy)
 
 ### Load Data 
-# Path to GTEx object
-path <- "~/FANTOM6/GTEX/gtexEset.rda"
-load(path)
-load("~/FANTOM6/GTEX/gtexTPM.rda")
+load("./objs/gtexEset.rda")
+
 
 
 ### Load objs to run on laptop
+load("./objs/gtexfData.rda")
+load("./objs/gtexTPMrle.rda")
+load("./objs/gtexMaxAllLog.rda")
+load("./objs/gtexEntropyTissuesX.rda")
+load("./objs/TissueTypes.rda")
 #################################################################
 ### Create Tissue Facets 
-TissueTypes <- factor(gtexEset$smtsd)
+TissueTypes <- factor(TissueTypes) #factor(gtexEset$smtsd)
 
 #################################################################
+### Max of CPM by tissue
+gtexMaxTissue <- t(apply(exprs(gtexEset), 1, function(x, y)  {
+    tapply(x,y, max, na.rm = TRUE)
+}, y= TissueTypes)) 
+
 ### Overall max
-gtexMaxAll <- apply(gtexTPM,1, max)
+gtexMaxAll <- apply(gtexMaxTissue,1, max)
 
 ### Log2
 gtexMaxAllLog <- log2(gtexMaxAll)
-save(gtexMaxAllLog, file = "objs/gtexMaxAllLogTPM.rda")
+save(gtexMaxAllLog, file = "objs/gtexMaxAllLog.rda")
 #################################################################
 ### Calculate Entropy
 entropyFunc <- function(x, y) {
@@ -44,23 +55,23 @@ entropyFunc <- function(x, y) {
 }
 
 # entropyFunc <- function(x, y) {
-#     
-#     sums <- tapply(x,y, mean, na.rm=TRUE)
-#     sums <- ifelse(sums < 1, 0, 1)
-#     #sums[sums < 1] <- 0
-#     sumsN <- entropy.empirical(sums, unit = "log2")/
-#         log2(length(levels(y)))
-#     out <- 1-sumsN
+#         
+#         sums <- tapply(x,y, mean, na.rm=TRUE)
+#         sums <- ifelse(sums < 1, 0, 1)
+#         #sums[sums < 1] <- 0
+#         sumsN <- entropy.empirical(sums, unit = "log2")/
+#                 log2(length(levels(y)))
+#         out <- 1-sumsN
 # }
 
 
 
 ### Apply entropy function 
 gtexEntropyTissue <- apply(gtexCPM, 1, entropyFunc, y= TissueTypes)
-save(gtexEntropyTissue, file = "./objs/gtexEntropyTissues.rda")
+save(gtexEntropyTissue, file = "./objs/gtexEntropyTissuesX.rda")
 ### Apply empirical entropy
 gtexEntropyAll <- -1*apply(gtexCPM, 1, entropy.empirical)
-save(gtexEntropyAll, file = "~/FANTOM6/GTEX/gtexEntropyAll.rda")
+
 #################################################################
 ### Feature Types 
 ### Create lncRNA categories (as factors)
@@ -117,7 +128,7 @@ layout(mat = matrix(c(1,2,0,3,4,5,0,6,7,8,0,9,10,11,0,12), 2,8),
 #######################
 ### Make plot for codingmRNA and add genes to plot
 sel <- FeatureTypes == "codingmRNA"
-par(mar=c(0, 5, 1.1, 0),cex = 2.2)
+par(mar=c(0, 5, 1.1, 0),cex = 2.3)
 corners <- par("usr")
 boxplot(gtexEntropyTissue[sel], horizontal=TRUE , ylim=c(0,1), xaxt="n" , col
         ="firebrick1" , frame=F, outline = F, boxwex = 0.3, staplewex = 0.3,
@@ -127,7 +138,7 @@ text(x = med, y = corners[2]+0.3, labels = round(med,2), col = "red", srt = 0)
 par(mar=c(5, 5, 0, 0))
 smoothScatter(gtexEntropyTissue[sel], gtexMaxAllLog[sel],
               colramp=colorRampPalette(c("white", "firebrick1")),
-              transformation = function(x) x,
+              transformation = function(x) x^.5,
               nrpoints = 0,
               ylim = c(-5,20), xlim = c(0,1),
               xlab = "expression specificity",
@@ -139,9 +150,14 @@ selGns <- which(gtexfData$HGNC_symbol %in% gns)
 gnsSymb <- gtexfData$HGNC_symbol[selGns]
 points(gtexEntropyTissue[selGns], gtexMaxAllLog[selGns], 
        pch = 20, col = "black")
-text(gtexEntropyTissue[selGns], gtexMaxAllLog[selGns], 
-     labels = gnsSymb, pos = c(4,3,1,4), cex = 0.8)
-
+text(gtexEntropyTissue[43090], gtexMaxAllLog[43090], pos = 4, cex =0.9,
+     labels = expression(italic("NANOG")))
+text(gtexEntropyTissue[93482], gtexMaxAllLog[93482], pos = 1, cex =0.9,
+     labels = expression(italic("CD74")))
+text(gtexEntropyTissue[93943], gtexMaxAllLog[93943], pos = 4, cex =0.9,
+     labels = expression(italic("ACTB")))
+text(gtexEntropyTissue[94697], gtexMaxAllLog[94697], pos = 4, cex =0.9,
+     labels = expression(italic("IL7")))
 ### Add median lines for entropy
 mCodingent <- median(gtexEntropyTissue[sel], na.rm = T)
 abline(v= mCodingent, col="firebrick1", lty=2)
@@ -161,7 +177,7 @@ text(x = corners[2]+0.15, y = med, labels = round(med, 2), col = "firebrick1", s
 ### Make plot for divergent p-lncRNA and add genes to plot
 sel <- FeatureTypes == "divergent p-lncRNA"
 
-par(mar=c(0, 5, 1.1, 0),cex = 2.2)
+par(mar=c(0, 5, 1.1, 0),cex = 2.3)
 corners <- par("usr")
 boxplot(gtexEntropyTissue[sel], horizontal=TRUE , ylim=c(0,1), xaxt="n" , col
         ="purple3" , frame=F, outline = F, boxwex = 0.3, staplewex = 0.3,
@@ -171,7 +187,7 @@ text(x = med, y = corners[2]-0.3, labels = round(med,2), col = "purple3", srt = 
 par(mar=c(5, 5, 0, 0))
 smoothScatter(gtexEntropyTissue[sel], gtexMaxAllLog[sel],
               colramp=colorRampPalette(c("white", "purple3")),
-              transformation = function(x) x,
+              transformation = function(x) x^.5,
               nrpoints = 0,
               ylim = c(-5,20), xlim = c(0,1),
               xlab = "expression specificity",
@@ -183,9 +199,20 @@ selGns <- which(gtexfData$HGNC_symbol %in% gns)
 gnsSymb <- gtexfData$HGNC_symbol[selGns]
 points(gtexEntropyTissue[selGns], gtexMaxAllLog[selGns], 
        pch = 20, col = "black")
-text(gtexEntropyTissue[selGns], gtexMaxAllLog[selGns], 
-     labels = gnsSymb, pos = 4, cex = 0.8)
+y <- gtexMaxAllLog[selGns]
+y[1] <- y[1]-0.7
+y[3] <- y[3]+0.7
 
+text(gtexEntropyTissue[48033], gtexMaxAllLog[48033], adj = c(0,1), cex =0.9,
+     labels = expression(italic("ZFAS1")))
+text(gtexEntropyTissue[52764], gtexMaxAllLog[52764], pos = 4, cex =0.9,
+     labels = expression(italic("PCAT7")))
+text(gtexEntropyTissue[55564], gtexMaxAllLog[55564], adj = c(0,0), cex =0.9,
+     labels = expression(italic("TUG1")))
+text(gtexEntropyTissue[106869], gtexMaxAllLog[106869], pos = 4, cex =0.9,
+     labels = expression(italic("UCHL1-AS1")))
+text(gtexEntropyTissue[109365], gtexMaxAllLog[109365], pos = 4, cex =0.9,
+     labels = expression(italic("FENDRR")))
 ### Add median lines for entropy
 mCodingent <- median(gtexEntropyTissue[sel], na.rm = T)
 abline(v= mCodingent, col="purple3", lty=2)
@@ -202,7 +229,7 @@ text(x = corners[2]+0.15, y = med, labels = round(med, 2), col = "purple3", srt 
 ### Make plot for intergenic p-lncRNA and add genes to plot      
 sel <- FeatureTypes == "intergenic p-lncRNA"
 
-par(mar=c(0, 5, 1.1, 0),cex = 2.2)
+par(mar=c(0, 5, 1.1, 0),cex = 2.3)
 corners <- par("usr")
 boxplot(gtexEntropyTissue[sel], horizontal=TRUE , ylim=c(0,1), xaxt="n" , col
         ="deepskyblue3" , frame=F, outline = F, boxwex = 0.3, staplewex = 0.3,
@@ -212,7 +239,7 @@ text(x = med, y = corners[2]-0.3, labels = round(med,2), col = "deepskyblue3", s
 par(mar=c(5, 5, 0, 0))
 smoothScatter(gtexEntropyTissue[sel], gtexMaxAllLog[sel],
               colramp=colorRampPalette(c("white", "deepskyblue3")),
-              transformation = function(x) x,
+              transformation = function(x) x^.5,
               nrpoints = 0,
               ylim = c(-5,20), xlim = c(0,1),
               xlab = "expression specificity",
@@ -222,11 +249,23 @@ grid (NULL,NULL, lty = 2, col = "grey60")
 gns <- c("MALAT1", "NEAT1", "XIST", "HAR1A", "BCAR4")
 selGns <- which(gtexfData$HGNC_symbol %in% gns)
 gnsSymb <- gtexfData$HGNC_symbol[selGns]
+
 points(gtexEntropyTissue[selGns], gtexMaxAllLog[selGns], 
        pch = 20, col = "black")
-text(gtexEntropyTissue[selGns], gtexMaxAllLog[selGns], 
-     labels = gnsSymb, pos = c(4,1,4,4,4), cex = 0.8)
+y <- gtexMaxAllLog[selGns]
+y[2] <- y[2]-1
+y[3] <- y[3]+0.7
 
+text(gtexEntropyTissue[51677], gtexMaxAllLog[51677], pos = 4, cex =0.9,
+     labels = expression(italic("HAR1A")))
+text(gtexEntropyTissue[54669], gtexMaxAllLog[54669], adj = c(0,1), cex =0.9,
+     labels = expression(italic("NEAT1")))
+text(gtexEntropyTissue[55337], gtexMaxAllLog[55337], adj = c(0,0), cex =0.9,
+     labels = expression(italic("MALAT1")))
+text(gtexEntropyTissue[104199], gtexMaxAllLog[104199], pos = 4, cex =0.9,
+     labels = expression(italic("XIST")))
+text(gtexEntropyTissue[108686], gtexMaxAllLog[108686], pos = 1, cex =0.9,
+     labels = expression(italic("BCAR4")))
 ### Add median lines for entropy
 mCodingent <- median(gtexEntropyTissue[sel], na.rm = T)
 abline(v= mCodingent, col="deepskyblue3", lty=2)
@@ -244,7 +283,7 @@ text(x = corners[2]+0.15, y = med, labels = round(med, 2), col = "deepskyblue3",
 ### Make plot for elncRNA and add genes to plot
 sel <- FeatureTypes == "elncRNA"
 
-par(mar=c(0, 5, 1.1, 0),cex = 2.2)
+par(mar=c(0, 5, 1.1, 0),cex = 2.3)
 corners <- par("usr")
 boxplot(gtexEntropyTissue[sel], horizontal=TRUE , ylim=c(0,1), xaxt="n" , col
         ="green4" , frame=F, outline = F, boxwex = 0.3, staplewex = 0.3,
@@ -254,7 +293,7 @@ text(x = med, y = corners[2]-0.3, labels = round(med,2), col = "green4", srt = 0
 par(mar=c(5, 5, 0, 0))
 smoothScatter(gtexEntropyTissue[sel], gtexMaxAllLog[sel],
               colramp=colorRampPalette(c("white", "green4")),
-              transformation = function(x) x,
+              transformation = function(x) x^.5,
               nrpoints = 0,
               ylim = c(-5,20), xlim = c(0,1),
               xlab = "expression specificity",
@@ -266,9 +305,15 @@ selGns <- which(gtexfData$HGNC_symbol %in% gns)
 gnsSymb <- gtexfData$HGNC_symbol[selGns]
 points(gtexEntropyTissue[selGns], gtexMaxAllLog[selGns], 
        pch = 20, col = "black")
-text(gtexEntropyTissue[selGns], gtexMaxAllLog[selGns], 
-     labels = gnsSymb, pos = c(4,4,4,3), cex = 0.8)
 
+text(gtexEntropyTissue[56977], gtexMaxAllLog[56977], pos = 4, cex =0.9,
+     labels = expression(italic("HCCAT5")))
+text(gtexEntropyTissue[104455], gtexMaxAllLog[104455], pos = 3, cex =0.9,
+     labels = expression(italic("TRERNA1")))
+text(gtexEntropyTissue[104530], gtexMaxAllLog[104530], pos = 4, cex =0.9,
+     labels = expression(italic("DLX6-AS1")))
+text(gtexEntropyTissue[106408], gtexMaxAllLog[106408], pos = 4, cex =0.9,
+     labels = expression(italic("LUCAT1")))
 ### Add median lines for entropy
 mCodingent <- median(gtexEntropyTissue[sel], na.rm = T)
 abline(v= mCodingent, col="green4", lty=2)
@@ -317,6 +362,15 @@ grid(col = "gray 60")
 
 ### Dev off
 dev.off()
+
+#################################################################
+### Save Objects 
+save(gtexMaxAll, file = "./objs/gtexMaxAll.rda")
+save(gtexMaxAllLog, file = "./objs/gtexMaxAllLog.rda")
+save(gtexEntropyAll, file = "./objs/gtexEntropyAll.rda")
+save(gtexEntropyTissue, file = "./objs/gtexEntropyTissue.rda")
+save(FeatureTypes2, file = "./objs/FeatureTypes2.rda")
+save(FeatureTypes, file = "./objs/FeatureTypes.rda")
 
 #################################################################
 ### Session information and clean, quit

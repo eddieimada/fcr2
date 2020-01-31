@@ -11,12 +11,11 @@ setwd("~/Research/FANTOM6/ReCount2/catTCGA/")
 ### Clean environment 
 rm(list=ls())
 
-### Load
+### Read results tables from DGE
 files <- list.files("~/DropboxMech/FANTOM6/TCGA/DGE/", recursive = TRUE,
                     pattern="DGE.+csv$", full.names = TRUE)
 files <- files[-grep("Unscaled", files)]
 
-### Read files
 DGE <- lapply(files, read.csv, stringsAsFactors=FALSE)
 
 ### Add names

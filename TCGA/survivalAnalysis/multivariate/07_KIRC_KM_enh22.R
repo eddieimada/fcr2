@@ -103,7 +103,7 @@ kidneyEnhancerSurv <- survfit(KidneySurv ~ ENSG00000272666)
 
 
 ### Drawing Kaplan-Meier curve
-jpeg(filename = "../figs/KIRC_KM_curve.jpg", width = 4000, height = 4000, res = 300)
+jpeg(filename = "../figs/KIRC_KM_curve_italicized_offname.jpg", width = 4000, height = 4000, res = 300)
 ggsurvkm <- ggsurvplot(kidneyEnhancerSurv, data = KidneySurv, 
                        pval = TRUE, pval.method = TRUE,
                        xlab = "Overall survival in days", ylab = "Survival probability", 
@@ -122,7 +122,7 @@ ggsurvkm <- ggsurvplot(kidneyEnhancerSurv, data = KidneySurv,
                        fontsize = 10,
                        )
 ggsurvkm <- ggpar(ggsurvkm,
-                  font.title     = c(34, "plain", "black"),         
+                  font.title     = c(34, "italic", "black"),         
                   font.caption   = c(14, "plain"),        
                   font.x         = c(30, "italic"),          
                   font.y         = c(30, "italic"),      
@@ -131,9 +131,9 @@ ggsurvkm <- ggpar(ggsurvkm,
                   font.legend    = c(30, "plain", "black"),
 )
 ggsurvkm$plot <- ggsurvkm$plot + 
-  ggtitle("Gene ENSG00000272666") +
+  ggtitle('CTA-384D8.35')+
   theme(
-    plot.title = element_text(color = "black", size=34, hjust = 0.5),
+    plot.title = element_text(face = "italic", color = "black", size=34, hjust = 0.5),
     # axis.text.x=element_text(color = "green", size=30),
     # axis.text.y=element_text(color = "black", size=30),
     axis.title.x=element_blank(),

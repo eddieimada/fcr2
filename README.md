@@ -36,7 +36,11 @@ library(recount)
 
 ### Extract counts matrix
 rseCounts <- assays(TCGA)$counts
-rownames(rseCounts) <- rowRanges(rse_scaled)$ID
+
+### Extract feature information
+grList <- rowRanges(GTEX)
+fdata <- mcols(grList)
+
 
 ### Creating list of pheno data splited by cancer type
 pheno <- as.data.frame(colData(TCGA))
