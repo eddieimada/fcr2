@@ -6,7 +6,7 @@ The code is organized in three folders.
 - Pre-Processing folder contain the scripts used to create and process the resource. 
 - TCGA folder contain the scripts necessary for the analysis performed in the TCGA cohort, such as the DGE and Survival analysis (under subfolder survAnalysis). 
 - GTEX folder contain the scripts necessary for all analysis performed in the GTEx cohort, this includes the specificity and expression levels analysis, biomarkers expression profiles across tissues and other validation steps. 
-
+# PLEASE NOTE: THE TPM CALCULATION IS DIFFERENT FROM CPM! TPM CALCULATION STARTS FROM RAW UNSCALED DATA!
 All data necessary to reproduce these analysis can be obtained in https://jhubiostatistics.shinyapps.io/recount/
 ## How to use
 
