@@ -11,7 +11,7 @@ require(Biobase)
 require(plotrix)
 require(edgeR)
 # Path to GTEx object
-path <- "~/FANTOM6/GTEX/gtexEset.rda"
+path <- "~/FANTOM6/GTEX/gtexEset_raw.rda"
 load(path)
 load("~/FANTOM6/GTEX/uniqRangesNeg.rda")
 load("~/FANTOM6/GTEX/uniqRangesPos.rda")
@@ -23,7 +23,7 @@ uniq <- rbind.data.frame(uniqPos,uniqNeg)
 rownames(uniq) <- uniq$genes
 
 ### Create TPM matrix
-gtexExprs<- exprs(gtexEset)
+gtexExprs<- exprs(gtexEset_raw)
 uniq <- uniq[rownames(gtexExprs),]
 KM <- uniq$GeneCovFromRanges
 
@@ -130,7 +130,6 @@ gtexCI95order5 <- gtexSummary$codingmRNA$CI95[newOrder2]
 
 #################################################################
 ###Save objects
-save(rle, file = "./objs/rle.rda")
 
 save(gtexTPM, file = "./objs/gtexTPM.rda")
 
