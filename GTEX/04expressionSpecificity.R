@@ -23,7 +23,7 @@ load("./objs/gtexEset.rda")
 
 ### Load objs to run on laptop
 load("./objs/gtexfData.rda")
-load("./objs/gtexTPMrle.rda")
+load("./objs/gtexTPM.rda")
 load("./objs/gtexMaxAllLog.rda")
 load("./objs/gtexEntropyTissuesX.rda")
 load("./objs/TissueTypes.rda")
@@ -32,13 +32,10 @@ load("./objs/TissueTypes.rda")
 TissueTypes <- factor(TissueTypes) #factor(gtexEset$smtsd)
 
 #################################################################
-### Max of CPM by tissue
-gtexMaxTissue <- t(apply(exprs(gtexEset), 1, function(x, y)  {
-    tapply(x,y, max, na.rm = TRUE)
-}, y= TissueTypes)) 
-
+### Compute CPM
+gtexCPM <- apply(gtexExprs, 2, function(x) {(x/sum(x))*1000000})
 ### Overall max
-gtexMaxAll <- apply(gtexMaxTissue,1, max)
+gtexMaxAll <- apply(gtexCPM,1, max)
 
 ### Log2
 gtexMaxAllLog <- log2(gtexMaxAll)
@@ -67,10 +64,10 @@ entropyFunc <- function(x, y) {
 
 
 ### Apply entropy function 
-gtexEntropyTissue <- apply(gtexCPM, 1, entropyFunc, y= TissueTypes)
+gtexEntropyTissue <- apply(gtexTPM, 1, entropyFunc, y= TissueTypes)
 save(gtexEntropyTissue, file = "./objs/gtexEntropyTissuesX.rda")
 ### Apply empirical entropy
-gtexEntropyAll <- -1*apply(gtexCPM, 1, entropy.empirical)
+gtexEntropyAll <- -1*apply(gtexTPM, 1, entropy.empirical)
 
 #################################################################
 ### Feature Types 
