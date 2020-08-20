@@ -25,8 +25,9 @@ rownames(uniq) <- uniq$genes
 ### Create TPM matrix
 gtexExprs<- exprs(gtexEset_raw)
 uniq <- uniq[rownames(gtexExprs),]
-KM <- uniq$GeneCovFromRanges
-
+KM <- uniq$GeneCovFromRanges/1000
+read_length <- pData(gtexEset)$avg_read_length
+gtexTPM <- sweep(gtexExprs, 2, FUN = "/", STATS =  read_length)
 gtexTPM <- sweep(gtexTPM, 1, FUN = "/", STATS = KM)
 
 libsize <- colSums(gtexTPM)
