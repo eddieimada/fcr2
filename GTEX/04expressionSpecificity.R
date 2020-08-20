@@ -42,7 +42,7 @@ save(gtexMaxAllLog, file = "objs/gtexMaxAllLog.rda")
 #################################################################
 ### Calculate Entropy
 entropyFunc <- function(x, y) {
-    sums <- tapply(x,y, max, na.rm=TRUE)
+    sums <- tapply(x,y, mean, na.rm=TRUE)
     sums[sums < 0.1] <- 0
     sumsN <- entropy.empirical(sums, unit = "log2")/
         log2(length(levels(y)))
