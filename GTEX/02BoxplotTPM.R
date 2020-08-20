@@ -1,5 +1,5 @@
 #################################################################
-###Tejasvi Matam
+###Eddie Imada
 ### Create plot of % genes expressed/facet for each lncRNA type
 
 #################################################################
